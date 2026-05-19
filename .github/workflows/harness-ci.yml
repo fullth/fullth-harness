@@ -1,0 +1,51 @@
+name: harness-ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: SKILL frontmatter 검증
+        run: ./scripts/check-skills.sh
+
+      - name: 템플릿 placeholder 검증
+        run: ./scripts/check-templates.sh
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: new-project.sh smoke test
+        run: |
+          HARNESS_PROJECT_DIR="$RUNNER_TEMP/proj" \
+            ./scripts/new-project.sh smoke-test --no-remote
+          cd "$RUNNER_TEMP/proj/$(date +%Y-%m-%d)-smoke-test"
+          test -f PROBLEM.md && test -f DESIGN.md && test -f RETRO.md
+          test -f .github/workflows/ci.yml && test -f Dockerfile
+          npm install
+          npm run build
+          node -e "require('fs').accessSync('dist/main.js')"
+
+  changelog:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 스킬·템플릿 변경 시 CHANGELOG 갱신 확인
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          changed="$(git diff --name-only "$base" HEAD)"
+          if echo "$changed" | grep -qE '^(skills|templates|playbook)/'; then
+            if ! echo "$changed" | grep -q '^CHANGELOG.md$'; then
+              echo "skills/templates/playbook 변경 시 CHANGELOG.md 갱신 필요"
+              exit 1
+            fi
+          fi
+          echo "CHANGELOG 검사 통과"
