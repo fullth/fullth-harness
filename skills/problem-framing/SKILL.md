@@ -18,7 +18,13 @@ description: 새 프로젝트의 아이디어를 PROBLEM.md 로 구체화할 때
    - 범위 — 이번에 만드는 것
    - 비범위 — 의도적으로 빼는 것
 3. 답을 받을 때마다 해당 placeholder 를 채운다.
-4. 모든 placeholder 가 사라지면 사용자에게 전체를 보여주고 확인받는다.
+4. 운영 모델 결정 — 다음 4개 질문에 명확히 답한다. PROBLEM.md 범위/비범위
+   란에 결과를 명시한다.
+   - 영속 저장소가 필요한가? (필요시 `playbook/add-persistence.md`)
+   - 사용자 입력을 받는 엔드포인트가 있는가? (필요시 `playbook/add-validation.md`)
+   - 외부 API 를 호출하는가? (있으면 `playbook/add-external-api.md` 패턴 적용)
+   - 정기 발송/cron 이 필요한가? 운영 위치는 어디인가? (서버, GH Actions cron, 로컬 등)
+5. 모든 placeholder 가 사라지면 사용자에게 전체를 보여주고 확인받는다.
 
 ## 원칙
 
