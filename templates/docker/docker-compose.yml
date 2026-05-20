@@ -7,3 +7,14 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+
+# 영속 저장소가 필요해지면 playbook/add-persistence.md 참고 후
+# 아래 형태로 서비스를 추가한다. 기본값은 저장소 없음.
+#
+#  mongo:
+#    image: mongo:7
+#    ports: ["27017:27017"]
+#    volumes: ["mongo-data:/data/db"]
+#
+# volumes:
+#   mongo-data:
