@@ -2,6 +2,23 @@
 
 하네스의 변경 이력. 스킬·템플릿·플레이북이 바뀔 때마다 한 항목씩 남긴다.
 
+## [0.1.3] - 2026-05-20
+
+### Added
+
+- `templates/cli/` — bash CLI 프로젝트 골격. `bin/<<PROJECT_NAME>>` 단일 entry + `scripts/lib/common.sh` + `tests/entry.bats` + 카탈로그 폴더. (hermes-setup 회고 반영)
+- `templates/ci/cli-ci.yml` — docs / shellcheck / bats 3 잡 CI.
+- `skills/cli-scaffold/SKILL.md` — bash CLI 컨벤션·골격·테스트·CI·사용자 파일 갱신 패턴 정리.
+
+### Changed
+
+- `scripts/new-project.sh` — `--type nest|cli` 옵션 추가. 기본은 `nest` 라 기존 호출은 그대로 동작. `cli` 일 때 `templates/cli/` 와 `templates/ci/cli-ci.yml` 적용.
+- `templates/ci/project-ci.yml` → `templates/ci/nest-ci.yml` 로 이름 변경. CLI 와 구분 명확화.
+- `playbook/checklist.md` — Nest / CLI 별 산출물 항목 분리.
+- `playbook/daily-flow.md` — 골격 생성 단계에 `--type` 명시.
+- `scripts/check-templates.sh` — CLI 템플릿 placeholder 검증 추가.
+- `.github/workflows/harness-ci.yml` — CLI smoke test 잡 추가.
+
 ## [0.1.2] - 2026-05-20
 
 ### Added
