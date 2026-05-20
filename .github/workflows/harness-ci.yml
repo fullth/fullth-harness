@@ -20,16 +20,31 @@ jobs:
         with:
           node-version: '22'
 
-      - name: new-project.sh smoke test
+      - name: new-project.sh smoke test (nest)
         run: |
-          HARNESS_PROJECT_DIR="$RUNNER_TEMP/proj" \
+          HARNESS_PROJECT_DIR="$RUNNER_TEMP/proj-nest" \
             ./scripts/new-project.sh smoke-test --no-remote
-          cd "$RUNNER_TEMP/proj/$(date +%Y-%m-%d)-smoke-test"
+          cd "$RUNNER_TEMP/proj-nest/$(date +%Y-%m-%d)-smoke-test"
           test -f PROBLEM.md && test -f DESIGN.md && test -f RETRO.md
           test -f .github/workflows/ci.yml && test -f Dockerfile
           npm install
           npm run build
           node -e "require('fs').accessSync('dist/main.js')"
+
+      - name: install bats for cli smoke test
+        run: sudo apt-get install -y bats shellcheck
+
+      - name: new-project.sh smoke test (cli)
+        run: |
+          HARNESS_PROJECT_DIR="$RUNNER_TEMP/proj-cli" \
+            ./scripts/new-project.sh smoke-cli --type cli --no-remote
+          cd "$RUNNER_TEMP/proj-cli/$(date +%Y-%m-%d)-smoke-cli"
+          test -f PROBLEM.md && test -f DESIGN.md && test -f RETRO.md
+          test -f .github/workflows/ci.yml && test -f bin/smoke-cli
+          test -x bin/smoke-cli
+          ! grep -r '<<PROJECT_NAME>>' bin scripts tests
+          shellcheck -x -e SC1091,SC2001 bin/* scripts/*.sh scripts/lib/*.sh
+          bats tests/
 
   changelog:
     runs-on: ubuntu-latest
