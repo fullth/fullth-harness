@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SCRIPTS="$REPO_ROOT/scripts"
+
+CMD="${1:-}"
+shift || true
+
+usage() {
+  cat <<EOF
+<<PROJECT_NAME>> — 한 줄 설명
+
+명령:
+  hello                 예시 명령. scripts/hello.sh 호출.
+
+예:
+  <<PROJECT_NAME>> hello
+EOF
+}
+
+case "$CMD" in
+  hello) exec bash "$SCRIPTS/hello.sh" "$@" ;;
+  ""|help|-h|--help) usage ;;
+  *) printf "알 수 없는 명령: %s\n\n" "$CMD" >&2; usage; exit 1 ;;
+esac

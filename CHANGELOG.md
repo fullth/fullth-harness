@@ -2,6 +2,41 @@
 
 하네스의 변경 이력. 스킬·템플릿·플레이북이 바뀔 때마다 한 항목씩 남긴다.
 
+## [0.1.4] - 2026-05-21
+
+### Added
+
+- `templates/ts-cli/` — TypeScript CLI 골격(commander + zod + tsx + vitest, `lib/` 분리). 외부 API/웹 데이터를 다루는 일회성 요청-응답 도구용. (stay-finder 회고 반영)
+- `templates/ci/ts-cli-ci.yml` — docs / build-test 2 잡 CI (docker 없음).
+- `skills/ts-cli-scaffold/SKILL.md` — TS CLI 컨벤션·골격·테스트. bash `cli-scaffold` 와 구분.
+- `skills/web-scrape-provider/SKILL.md` — 웹/비공식 API 수집 공통 패턴: 합법성 사전 점검, 데이터 위치 탐색(SSR `__NEXT_DATA__`/Nuxt devalue/예약 단계), UA 차단 우회, provider+레지스트리 구조, 단계별 비용 트레이드오프.
+- `skills/serverless-bot-deploy/SKILL.md` — CLI 도구를 폰/원격에서 쓰는 서버리스 배포: Cloudflare Workers webhook + `waitUntil` 비동기, 시크릿 안전 주입, GitHub Actions 자동배포.
+
+### Changed
+
+- `scripts/new-project.sh` — `--type ts-cli` 추가(`nest|cli|ts-cli`). package.json·src placeholder 치환 포함. **커밋 author 이메일을 개인 gmail 에서 `users.noreply.github.com` 으로 변경(퍼블릭 전환 시 PII 노출 방지)**.
+- `playbook/daily-flow.md` — 외부 데이터 합법성 점검 단계 신설, 골격 생성에 `ts-cli` 반영, 유형별 구현 스킬 분기 명시.
+- `playbook/checklist.md` — 공통에 외부 데이터 합법성 항목, TypeScript CLI 산출물 섹션 추가.
+- `scripts/check-templates.sh` — ts-cli 템플릿 placeholder 검증 추가.
+- `.github/workflows/harness-ci.yml` — ts-cli smoke test 잡 추가.
+
+## [0.1.3] - 2026-05-20
+
+### Added
+
+- `templates/cli/` — bash CLI 프로젝트 골격. `bin/<<PROJECT_NAME>>` 단일 entry + `scripts/lib/common.sh` + `tests/entry.bats` + 카탈로그 폴더. (hermes-setup 회고 반영)
+- `templates/ci/cli-ci.yml` — docs / shellcheck / bats 3 잡 CI.
+- `skills/cli-scaffold/SKILL.md` — bash CLI 컨벤션·골격·테스트·CI·사용자 파일 갱신 패턴 정리.
+
+### Changed
+
+- `scripts/new-project.sh` — `--type nest|cli` 옵션 추가. 기본은 `nest` 라 기존 호출은 그대로 동작. `cli` 일 때 `templates/cli/` 와 `templates/ci/cli-ci.yml` 적용.
+- `templates/ci/project-ci.yml` → `templates/ci/nest-ci.yml` 로 이름 변경. CLI 와 구분 명확화.
+- `playbook/checklist.md` — Nest / CLI 별 산출물 항목 분리.
+- `playbook/daily-flow.md` — 골격 생성 단계에 `--type` 명시.
+- `scripts/check-templates.sh` — CLI 템플릿 placeholder 검증 추가.
+- `.github/workflows/harness-ci.yml` — CLI smoke test 잡 추가.
+
 ## [0.1.2] - 2026-05-20
 
 ### Added

@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 필수 문서 존재 확인
+        run: |
+          for f in PROBLEM.md DESIGN.md RETRO.md; do
+            test -f "$f" || { echo "missing: $f"; exit 1; }
+          done
+      - name: 빈 템플릿 placeholder 검사
+        run: |
+          if grep -rERl '<<.+>>' PROBLEM.md DESIGN.md RETRO.md; then
+            echo "문서에 채우지 않은 placeholder 가 남아있다"
+            exit 1
+          fi
+
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+      - run: npm run build
+      - run: npm test

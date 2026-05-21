@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: required docs present
+        run: |
+          for f in PROBLEM.md DESIGN.md RETRO.md README.md; do
+            test -f "$f" || { echo "missing: $f"; exit 1; }
+          done
+      - name: no unfilled placeholders
+        run: |
+          if grep -rERl '<<.+>>' PROBLEM.md DESIGN.md RETRO.md; then
+            echo "문서에 채우지 않은 placeholder 가 남아있다"
+            exit 1
+          fi
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install shellcheck
+        run: sudo apt-get install -y shellcheck
+      - name: run shellcheck
+        run: |
+          shellcheck -x -e SC1091,SC2001 \
+            bin/* \
+            scripts/*.sh \
+            scripts/lib/*.sh
+
+  bats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install bats and jq
+        run: sudo apt-get install -y bats jq
+      - name: run bats
+        run: bats tests/
