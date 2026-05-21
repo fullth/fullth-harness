@@ -153,7 +153,7 @@ fi
 cd "$DEST"
 git init -q
 git add -A
-git -c user.name="fullth" -c user.email="xoghksdla@gmail.com" \
+git -c user.name="fullth" -c user.email="fullth@users.noreply.github.com" \
   commit -q -m "프로젝트 골격 생성"
 
 log "git 초기화 완료"
