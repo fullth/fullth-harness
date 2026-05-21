@@ -37,6 +37,16 @@ if ! grep -q '<<PROJECT_NAME>>' "$ROOT/templates/cli/bin/<<PROJECT_NAME>>"; then
   fail=1
 fi
 
+if ! grep -q '<<PROJECT_NAME>>' "$ROOT/templates/ts-cli/package.json"; then
+  err "templates/ts-cli/package.json 에 <<PROJECT_NAME>> 없음"
+  fail=1
+fi
+
+if ! grep -q '<<PROJECT_NAME>>' "$ROOT/templates/ts-cli/src/cli.ts"; then
+  err "templates/ts-cli/src/cli.ts 에 <<PROJECT_NAME>> 없음"
+  fail=1
+fi
+
 if [[ "$fail" -ne 0 ]]; then
   err "템플릿 placeholder 검증 실패"
   exit 1

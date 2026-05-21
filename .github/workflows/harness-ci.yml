@@ -46,6 +46,19 @@ jobs:
           shellcheck -x -e SC1091,SC2001 bin/* scripts/*.sh scripts/lib/*.sh
           bats tests/
 
+      - name: new-project.sh smoke test (ts-cli)
+        run: |
+          HARNESS_PROJECT_DIR="$RUNNER_TEMP/proj-tscli" \
+            ./scripts/new-project.sh smoke-tscli --type ts-cli --no-remote
+          cd "$RUNNER_TEMP/proj-tscli/$(date +%Y-%m-%d)-smoke-tscli"
+          test -f PROBLEM.md && test -f DESIGN.md && test -f RETRO.md
+          test -f .github/workflows/ci.yml && test -f package.json
+          ! grep -r '<<PROJECT_NAME>>' src package.json
+          npm install
+          npm run build
+          npm test
+          node dist/cli.js hello ci
+
   changelog:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'

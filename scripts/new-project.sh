@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 새 프로젝트 골격을 생성한다.
-# 사용법: ./scripts/new-project.sh <project-name> [--type nest|cli] [--no-remote]
-#   --type     : 프로젝트 유형. 기본 nest. cli 는 bash CLI 골격.
+# 사용법: ./scripts/new-project.sh <project-name> [--type nest|cli|ts-cli] [--no-remote]
+#   --type     : 프로젝트 유형. 기본 nest. cli 는 bash CLI, ts-cli 는 TypeScript CLI 골격.
 #   --no-remote: gh repo create 를 건너뛴다 (CI smoke test 용)
 
 set -euo pipefail
@@ -25,12 +25,12 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$NAME" ]]; then
-  err "사용법: $0 <project-name> [--type nest|cli] [--no-remote]"
+  err "사용법: $0 <project-name> [--type nest|cli|ts-cli] [--no-remote]"
   exit 1
 fi
 
-if [[ "$TYPE" != "nest" && "$TYPE" != "cli" ]]; then
-  err "--type 은 nest 또는 cli 만 가능. 받음: $TYPE"
+if [[ "$TYPE" != "nest" && "$TYPE" != "cli" && "$TYPE" != "ts-cli" ]]; then
+  err "--type 은 nest, cli, ts-cli 만 가능. 받음: $TYPE"
   exit 1
 fi
 
@@ -89,8 +89,20 @@ if [[ "$TYPE" == "cli" ]]; then
       done
 fi
 
+if [[ "$TYPE" == "ts-cli" ]]; then
+  cp -r "$ROOT/templates/ts-cli/." "$DEST/"
+  cp "$ROOT/templates/ci/ts-cli-ci.yml" "$DEST/.github/workflows/ci.yml"
+
+  # package.json + src 의 placeholder 치환
+  find "$DEST" -type f \( -name '*.json' -o -name '*.ts' \) -print0 \
+    | while IFS= read -r -d '' file; do
+        tmp="$(mktemp)"
+        sed "s/<<PROJECT_NAME>>/${NAME}/g" "$file" > "$tmp" && mv "$tmp" "$file"
+      done
+fi
+
 # .gitignore (유형별)
-if [[ "$TYPE" == "nest" ]]; then
+if [[ "$TYPE" == "nest" || "$TYPE" == "ts-cli" ]]; then
   cat > "$DEST/.gitignore" <<'EOF'
 node_modules/
 dist/
@@ -116,6 +128,29 @@ if [[ "$TYPE" == "nest" ]]; then
 \`\`\`bash
 npm install
 npm run start:dev
+\`\`\`
+
+## 문서
+
+- [PROBLEM.md](./PROBLEM.md) — 문제정의
+- [DESIGN.md](./DESIGN.md) — 설계
+- [RETRO.md](./RETRO.md) — 회고
+EOF
+elif [[ "$TYPE" == "ts-cli" ]]; then
+  cat > "$DEST/README.md" <<EOF
+# ${NAME}
+
+## 시작
+
+\`\`\`bash
+npm install
+npm start -- --help
+\`\`\`
+
+## 테스트
+
+\`\`\`bash
+npm test
 \`\`\`
 
 ## 문서
